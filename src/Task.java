@@ -1,7 +1,7 @@
 public class Task {
-    int id;
-    int releaseTime;
-    int executionTime;
+    private final int id;
+    private final int releaseTime;
+    private final int executionTime;
 
     public Task(int id, int releaseTime, int excutionTime) {
         this.id = id;

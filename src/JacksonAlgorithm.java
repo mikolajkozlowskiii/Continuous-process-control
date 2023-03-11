@@ -20,7 +20,8 @@ public class JacksonAlgorithm {
             for (int j = 1; j < numOfTasks; j++) {
                 if (tasks[j - 1].getReleaseTime() > tasks[j].getReleaseTime()) {
                     swap(tasks, j - 1, j);
-                } else if (tasks[j - 1].getReleaseTime() == tasks[j].getReleaseTime()) {
+                }
+                else if (tasks[j - 1].getReleaseTime() == tasks[j].getReleaseTime()) {
                     if (tasks[j - 1].getExcutionTime() < tasks[j].getExcutionTime()) {
                         swap(tasks, j - 1, j);
                     }
@@ -53,49 +54,6 @@ public class JacksonAlgorithm {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-        List<Task> tasksList = List.of( new Task(1,3,5),
-                                        new Task(2, 2, 8),
-                                        new Task(3, 8, 3),
-                                        new Task(4, 3, 6),
-                                        new Task(5, 4, 6));
-        Task[] tasks = new Task[5];
-        for(int i = 0; i<tasks.length; i++){
-            tasks[i] = tasksList.get(i);
-        }
-        int cMax = totalExecutionTime(tasks);
-       */
-       /* List<Integer> capacities = List.of(1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000);
-        for (int capacity : capacities){
-            Task[] tasks = getRandomTasks(capacity, 0, 10);
-            int cMax = 0;
-
-            long start = System.currentTimeMillis();
-            for(int i = 0; i<100; i++){
-                cMax = totalExecutionTime(tasks);
-            }
-            long stop = System.currentTimeMillis();
-
-            System.out.println("capacity: " + capacity);
-            System.out.println("Cmax: " + cMax);
-            System.out.println("total time of execution: " + (stop - start) + "ms \n");
-        }*/
-
-
-
     public static Task[] getTasksFromFile(String pathname){
         try{
             Scanner reader = new Scanner(new File(pathname));
@@ -116,8 +74,6 @@ public class JacksonAlgorithm {
     public static Task[] getRandomTasks(int capacity, int minTime, int maxTime){
         Task[] tasks = new Task[capacity];
         for(int i = 0; i<capacity; i++){
-            //tasks[i] = new Task(i, (int) (Math.random() * maxTime) +minTime,
-                    //(int) (Math.random() * maxTime) +minTime);
             tasks[i] = new Task(i, 2, 3);
         }
         return tasks;
