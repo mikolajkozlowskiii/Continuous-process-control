@@ -1,12 +1,16 @@
+package Schrage;
+
 public class Task {
     private final int id;
     private final int releaseTime;
     private final int executionTime;
+    private final int deliveryTime;
 
-    public Task(int id, int releaseTime, int excutionTime) {
+    public Task(int id, int releaseTime, int executionTime, int deliveryTime) {
         this.id = id;
         this.releaseTime = releaseTime;
-        this.executionTime = excutionTime;
+        this.executionTime = executionTime;
+        this.deliveryTime = deliveryTime;
     }
 
     public int getReleaseTime() {
@@ -22,7 +26,12 @@ public class Task {
         return "Task{" +
                 "id=" + id +
                 ", releaseTime=" + releaseTime +
-                ", excutionTime=" + executionTime +
+                ", executionTime=" + executionTime +
+                ", deliveryTime=" + deliveryTime +
                 '}';
+    }
+
+    public int getDeliveryTime() {
+        return deliveryTime;
     }
 }
