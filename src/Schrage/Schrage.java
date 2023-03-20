@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+
+
 public class Schrage {
     public static void main(String[] args) {
         PriorityQueue<Task> readyTasks =
@@ -13,13 +15,28 @@ public class Schrage {
 
         List<String> pathnames = List.of("SCHRAGE1.dat", "SCHRAGE2.dat", "SCHRAGE3.dat", "SCHRAGE4.dat",
                 "SCHRAGE5.dat", "SCHRAGE6.dat", "SCHRAGE7.dat", "SCHRAGE8.dat", "SCHRAGE9.dat");
-        for(String pathname : pathnames) {
+
+
+        for (String pathname : pathnames) {
             Task[] tasks = getTasksFromFile(pathname);
-            for(Task task : tasks){
+            for (Task task : tasks) {
                 unorderedTasks.add(task);
             }
-            System.out.println(schrage(readyTasks, unorderedTasks));
+            long start = System.currentTimeMillis();
+            int cmax = schrage(readyTasks, unorderedTasks);
+            long stop = System.currentTimeMillis();
+            System.out.println("Schrage: " + cmax + ", time:" + (stop - start));
+
+            Task[] tasks2 = getTasksFromFile(pathname);
+            for (Task task : tasks2) {
+                unorderedTasks.add(task);
+            }
+            start = System.currentTimeMillis();
+            cmax = prtmS(readyTasks, unorderedTasks);
+            stop = System.currentTimeMillis();
+            System.out.println("prtmS: " + cmax + ", time:" + (stop - start));
         }
+    }
 
 
 /*
@@ -44,24 +61,61 @@ public class Schrage {
             System.out.println(unorderedTasks.poll());
         }*/
 
-    }
+
 
     public static int schrage(PriorityQueue<Task> readyTasks, PriorityQueue<Task> unorderedTasks){
         Task task;
         int time = 0;
         int Cmax = 0;
         while(!readyTasks.isEmpty() || !unorderedTasks.isEmpty()){
-            while(!unorderedTasks.isEmpty() && unorderedTasks.peek().getReleaseTime() <= time){ // check if there are ready tasks
+            //SPRAWDZENIE DOSTEPNYCH ZADAN
+            while(!unorderedTasks.isEmpty() && unorderedTasks.peek().getReleaseTime() <= time){
                 task =unorderedTasks.poll();
                 readyTasks.add(task);
             }
+            // PRZESUNIECIE DO MOMENTU, GDY JAKIES ZADANIE BEDZIE JUZ GOTOWE
+            if(readyTasks.isEmpty()){
+                time = unorderedTasks.peek().getReleaseTime();
+            }
+            // WYKONANIE ZADANIA I PRZESUNIECIE CZASU
+            else{
+                task = readyTasks.poll();
+                time = time + task.getExcutionTime();
+                Cmax = Math.max(Cmax, time+task.getDeliveryTime());
+            }
+        }
+        return Cmax;
+    }
+
+    public static int prtmS(PriorityQueue<Task> readyTasks, PriorityQueue<Task> unorderedTasks){
+        Task currentTask = new Task(0, 0, 0, Integer.MAX_VALUE);
+        Task nextReadyTask;
+        int time = 0;
+        int Cmax = 0;
+        while(!readyTasks.isEmpty() || !unorderedTasks.isEmpty()){
+            // SPRAWDZENIE DOSTEPNYCH ZADAN
+            while(!unorderedTasks.isEmpty() && unorderedTasks.peek().getReleaseTime() <= time){
+                nextReadyTask = unorderedTasks.poll();
+                readyTasks.add(nextReadyTask);
+                if(nextReadyTask.getDeliveryTime() > currentTask.getDeliveryTime()){
+                    currentTask.setExecutionTime(time - nextReadyTask.getReleaseTime());
+                    time = nextReadyTask.getReleaseTime(); // MOZLIWE "COFNIECIE" CZASU
+                    if(currentTask.getReleaseTime() > 0){
+                        readyTasks.add(currentTask);
+                    }
+                }
+            }
+            // PRZESUNIECIE DO MOMENTU, GDY JAKIES ZADANIE BEDZIE JUZ GOTOWE
             if(readyTasks.isEmpty()){ // przesuniecie do czasu, gdy juz jakies zadanie bedzie gotowe
                 time = unorderedTasks.peek().getReleaseTime();
             }
+            // POTENCJALNE WYKONANIE ZADANIA I PRZESUNIECIE CZASU
             else{
-                task = readyTasks.poll();
-                time = time + task.getExcutionTime(); // moment zakonczenia wykonywania zadania
-                Cmax = Math.max(Cmax, time+task.getDeliveryTime());
+                nextReadyTask = readyTasks.poll(); // POTENCJALNE WYKONYWANIE ZADANIA
+                currentTask = nextReadyTask;
+
+                time = time + currentTask.getExcutionTime(); // PRZESUNIECIE CZASU
+                Cmax = Math.max(Cmax, time+currentTask.getDeliveryTime()); // POTENCJALNE CMAX DLA DANEGO ZADANIA
             }
         }
         return Cmax;
@@ -84,4 +138,46 @@ public class Schrage {
             throw new NoSuchElementException("Pathname: " + pathname + "didn't found.");
         }
     }
+
+
+    public static Task[] getRandomTasks(int capacity, int minTime, int maxTime){
+        Task[] tasks = new Task[capacity];
+        for(int i = 0; i<capacity; i++){
+            tasks[i] = new Task(i, 2, 3, 3);
+        }
+        return tasks;
+    }
 }
+
+/* List<Integer> capacity = List.of(1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000);
+        for(int cap : capacity) {
+            Task[] tasks = getRandomTasks(cap, 1, 100);
+
+            int cMax = 0;
+            long start = System.currentTimeMillis();
+            for (int i = 0; i < 10000; i++) {
+                unorderedTasks.addAll(Arrays.asList(tasks));
+                cMax = schrage(readyTasks,unorderedTasks);
+            }
+            long stop = System.currentTimeMillis();
+
+            System.out.println("Prtms C_{max}: " + cMax);
+            System.out.println("Prtms: " + (stop - start) + "ms");
+
+
+
+
+
+
+            Task[] tasks2 = getRandomTasks(cap, 1, 100);
+
+            int cMax2 = 0;
+            long start2 = System.currentTimeMillis();
+            for (int i = 0; i < 1000; i++) {
+                unorderedTasks.addAll(Arrays.asList(tasks2));
+                cMax2 = prtmS(readyTasks,unorderedTasks);
+            }
+            long stop2 = System.currentTimeMillis();
+
+            System.out.println("Schrage C_{max}: " + cMax2);
+            System.out.println("Schrage: " + (stop2 - start2) + "ms");*/
